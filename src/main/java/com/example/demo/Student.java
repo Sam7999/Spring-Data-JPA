@@ -5,6 +5,13 @@ import jakarta.persistence.*;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity (name="studentA")
+@Table (
+        name = "studentA",
+        uniqueConstraints = {
+                @UniqueConstraint(name= "student_email_unique", columnNames ="email" )
+        }
+
+)
 
 public class Student {
 
@@ -25,36 +32,43 @@ public class Student {
     @Column (
             name = "first_name",
             nullable = false,
-            columnDefinition = "TEXT"
+            columnDefinition = "VARCHAR(100)"
 
     )
-    private String name;
+    private String firstName;
     @Column (
             name = "last_name",
             nullable = false,
-            columnDefinition = "TEXT"
+            columnDefinition = "VARCHAR(100)"
     )
     private String lastName;
     @Column (
             name = "email",
             nullable = false,
-            columnDefinition = "TEXT",
+            columnDefinition = "VARCHAR(100)",
             unique = true
     )
     private String email;
-    @Column(name= "age")
+    @Column(
+            name= "age",
+            nullable = false
+    )
     private Integer age;
 
-    public Student(Long id,
-                   String name,
+    public Student(
+                   String firstName,
                    String lastName,
                    String email,
                    Integer age) {
-        this.id = id;
-        this.name = name;
+
+        this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.age = age;
+    }
+
+    public Student() {
+
     }
 
     public Long getId() {
@@ -65,12 +79,12 @@ public class Student {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getfirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setfirstName(String name) {
+        this.firstName = name;
     }
 
     public String getLastName() {
@@ -101,7 +115,7 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", age=" + age +
