@@ -2,6 +2,9 @@ package com.example.demo;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity (name="studentA")
@@ -25,9 +28,7 @@ public class Student {
             strategy = SEQUENCE,
             generator = "student_sequence"
     )
-    @Column (
-            name = "id", updatable = false
-    )
+    @Column (name = "id", updatable = false)
     private Long id;
     @Column (
             name = "first_name",
@@ -54,7 +55,19 @@ public class Student {
             nullable = false
     )
     private Integer age;
+    @OneToOne (mappedBy = "student",// this will form a bidirectional relationship
+                                     // when u load a student you also load the card and vice versa
+    orphanRemoval = true) // allows to automatically remove child entities from the database
 
+    private StudentIdCard studentIdCard;
+    @OneToMany (mappedBy = "student", // CascadeType.REMOVE means when we delete a student we delete all children (books)
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST,
+                    CascadeType.REMOVE},
+            fetch = FetchType.LAZY  // always start with Lazy because not always you wanna fetch everything, so when we have a lot of data then it will slow down your application
+                                   // if the application needs extra data we can make the application make a querry for the books when it needs irt instead of loading everything at once
+    )
+    private List<Book> books = new ArrayList<>();
     public Student(
                    String firstName,
                    String lastName,
@@ -109,6 +122,23 @@ public class Student {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+    public void addBook (Book book) { // because we have a bidirectional relationship we have to add this method
+        if (!this.books.contains(book)){
+            this.books.add(book);
+            book.setStudent(this); //  wehn we load the book we want to load the student and then when we load the student we want to load the associated book with it
+
+        }
+    }
+    public void removeBook (Book book){
+        if (this.books.contains(book)){
+            this.books.remove(book);
+            book.setStudent(null);
+        }
+    }
+
+    public List<Book> getBooks() {
+        return books;
     }
 
     @Override
