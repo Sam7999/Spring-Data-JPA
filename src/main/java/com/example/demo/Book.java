@@ -17,7 +17,6 @@ public class Book {
             sequenceName ="book_sequence",
             allocationSize = 1
     )
-
     @GeneratedValue (
             strategy = SEQUENCE,
             generator = "book_sequence"

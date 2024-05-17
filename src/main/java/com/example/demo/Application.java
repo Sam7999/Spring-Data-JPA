@@ -47,7 +47,18 @@ public class Application {
 
             StudentIdCard studentIdCard =  new StudentIdCard(
                     "123456789",student);
-            studentIdCardRepository.save(studentIdCard);
+            student.setStudentIdCard(studentIdCard);
+
+            student.addEnrolment(new Enrolment(
+                    new EnrolmentId(1L, 1L),student, new Course("Computer Science", "IT"),LocalDateTime.now(), "Adam"  // we are adding  new EnrolmentId(1L, 1L) because we dont have rep for enrolment and courses
+            ));
+            student.addEnrolment(new Enrolment(
+                    new EnrolmentId(2L, 2L),student, new Course("Data structure", "IT"), LocalDateTime.now().minusDays(18), "Joseph"
+            ));
+//            student.enrolToCourse(new Course("Computer Science", "IT"));
+//            student.enrolToCourse(new Course("Data structure", "IT"));
+
+            studentRepository.save(student);
 
             studentRepository.findById(1L).ifPresent(s ->{System.out.println("fetch books lazy ..."); // this is showing the left join queries to get student and card
                 List<Book> books = student.getBooks(); // we are calling the books when we call the get method because it's lazy loading

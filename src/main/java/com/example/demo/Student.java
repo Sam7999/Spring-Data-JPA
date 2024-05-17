@@ -57,7 +57,8 @@ public class Student {
     private Integer age;
     @OneToOne (mappedBy = "student",// this will form a bidirectional relationship
                                      // when u load a student you also load the card and vice versa
-    orphanRemoval = true) // allows to automatically remove child entities from the database
+    orphanRemoval = true, cascade = {CascadeType.PERSIST,
+            CascadeType.REMOVE}) // allows to automatically remove child entities from the database
 
     private StudentIdCard studentIdCard;
     @OneToMany (mappedBy = "student", // CascadeType.REMOVE means when we delete a student we delete all children (books)
@@ -68,6 +69,26 @@ public class Student {
                                    // if the application needs extra data we can make the application make a querry for the books when it needs irt instead of loading everything at once
     )
     private List<Book> books = new ArrayList<>();
+//    @ManyToMany(cascade ={CascadeType.PERSIST,
+//            CascadeType.REMOVE} ) // fetch type is lazy by default
+
+//    @JoinTable(name = "enrolment", // this will create the enrollment table
+//            joinColumns = @JoinColumn(
+//                    name = "student_id",
+//                    foreignKey = @ForeignKey(name = "enrolment_student_id_fk")),
+//            inverseJoinColumns =@JoinColumn(
+//                    name = "course_id",
+//                    foreignKey = @ForeignKey(name = "enrolment_student_id_fk") ))
+@OneToMany(cascade ={CascadeType.PERSIST,
+        CascadeType.REMOVE},
+        mappedBy = "student" ) // "student" is the one found in enrolment (private Student student)
+
+
+private  List<Enrolment> enrolments = new ArrayList<>();
+
+
+//    private  List<Course> courses = new ArrayList<>();
+
     public Student(
                    String firstName,
                    String lastName,
@@ -137,9 +158,42 @@ public class Student {
         }
     }
 
+    public void setStudentIdCard(StudentIdCard studentIdCard) {
+        this.studentIdCard = studentIdCard;
+    }
+
     public List<Book> getBooks() {
         return books;
     }
+
+    public List<Enrolment> getEnrolments() {
+        return enrolments;
+    }
+
+    public void addEnrolment(Enrolment enrolment){  // metghod to add enrollment
+        if (!enrolments.contains(enrolment)){
+            enrolments.add(enrolment);
+        }
+    }
+
+    public void removeEnrolment(Enrolment enrolment){ // method to remove enrollment
+            enrolments.remove(enrolment);
+        }
+    //    public List<Course> getCourses() {
+//        return courses;
+//    }
+//
+//    public void setCourses(List<Course> courses) {
+//        this.courses = courses;
+//    }
+//    public void enrolToCourse(Course course){  // this is a method add a course in the enrollment table
+//        courses.add(course);
+//        course.getStudents().add(this);
+//    }
+//    public void unEnrolToCourse(Course course){ // this method is to remove course from the enrollment table
+//        courses.remove(course);
+//        course.getStudents().remove(this);
+//    }
 
     @Override
     public String toString() {
